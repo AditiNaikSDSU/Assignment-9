@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>jQuery Events </title>
+  <script src="scripts/jquery-3.7.1.min.js"></script>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; padding: 16px; }
+    .box { width: 400px; height: 400px; border: 1px solid #999; margin: 12px 0; display: grid; place-items: center; }
+    .w-h { padding: 8px; background: #f5f5f5; border: 1px dashed #aaa; display: inline-block; margin-top: 8px; }
+    input[type="text"], input[type="email"] { padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+    form .field { margin: 8px 0; }
+   a.demo { display: block; margin: 6px 0; } 
+  </style>
+</head>
+<body>
+
+  <h1>jQuery Events</h1>
+
+  <!-- 1 -->
+  <button id="btn1">Click (.click)</button>
+
+  <!-- 2 -->
+  <button id="btn2">Click (.bind)</button>
+
+  <!-- 3 -->
+  <button id="btn3">Click (.on)</button>
+
+  <!-- 4 -->
+  <div style="margin-top:8px;">
+    <button class="pair">A</button>
+    <button class="pair">B</button>
+  </div>
+
+  <!-- 5 -->
+  <div id="box5" class="box">#5: click / enter / leave (alerts)</div>
+
+  <!-- 6 -->
+  <div id="box6" class="box">#6: messages use &lt;span&gt;</div>
+  <span id="msg6"></span>
+
+  <!-- 7 -->
+  <a class="demo" id="demoLink" href="https://modulemedia.com">Go to modulemedia.com</a>
+
+  <!-- 8 -->
+  <div id="wh" class="w-h"></div>
+
+  <!-- 9 -->
+  <div class="field">
+    <label>Type here: <input id="focusField" type="text" placeholder="Focus changes background"></label>
+  </div>
+
+  <!-- 10 -->
+  <form id="signup" novalidate>
+    <div class="field">
+      <label>Name: <input type="text" id="name"></label>
+    </div>
+    <div class="field">
+      <label>Email: <input type="email" id="email"></label>
+    </div>
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    $(function () {
+
+      $('#box5, #box6').css({ width: 400, height: 400 });
+      // 1) .click()
+      $('#btn1').click(function () {
+        alert('Button #1 clicked (.click)');
+      });
+
+      // 2) .bind()
+      $('#btn2').bind('click', function () {
+        alert('Button #2 clicked (.bind)');
+      });
+
+      // 3) .on()
+      $('#btn3').on('click', function () {
+        alert('Button #3 clicked (.on)');
+      });
+
+      // 4) one handler for two buttons using .on()
+      $('.pair').on('click', function () {
+        alert('A button in the pair was clicked: ' + $(this).text());
+      });
+
+      // 5) box with click, mouseenter, mouseleave -> alerts
+      $('#box5').on({
+        click: function () { alert('#5 clicked'); },
+        mouseenter: function () { alert('mouse entered #5'); },
+        mouseleave: function () { alert('mouse left #5'); }
+      });
+
+      // 6) rewrite of #5 updating a <span> instead of alerts
+      const $msg6 = $('#msg6');
+      $('#box6').on({
+        click: function () { $msg6.text('You clicked the box.'); },
+        mouseenter: function () { $msg6.text('Mouse entered the box.'); },
+        mouseleave: function () { $msg6.text('Mouse left the box.'); }
+      });
+
+      // 7) prevent navigation, color red, alert triggering node
+      $('#demoLink').on('click', function (e) {
+        e.preventDefault();
+        $(this).css('color', 'red');
+        alert('Event triggered by node: ' + e.target.nodeName);
+      });
+
+      // 8) show window width x height as browser resizes
+      function showWH() {
+        $('#wh').text('Window: ' + $(window).width() + ' × ' + $(window).height());
+      }
+      $(window).on('resize', showWH);
+      showWH(); // initial display
+
+      // 9) input focus/blur background
+      $('#focusField')
+        .on('focus', function () { $(this).css('background', '#eee'); })
+        .on('blur', function () { $(this).css('background', '#fff'); });
+
+      // 10) simple form validation
+      $('#signup').on('submit', function (e) {
+        e.preventDefault();
+        const $name = $('#name');
+        const $email = $('#email');
+        let ok = true;
+
+        [$name, $email].forEach($f => {
+          const empty = !$f.val().trim();
+          $f.css('border', empty ? '2px solid red' : '2px solid green');
+          if (empty) ok = false;
+        });
+
+        if (!ok) {
+          alert('Both fields are required.');
+        } else {
+          alert('Form looks good!');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
